@@ -3,14 +3,9 @@ import { HttpClient } from "../utils/httpClient";
 import { IllmService } from "./illmService";
 
 export class DifyService implements IllmService {
-  private token: string;
-  private httpClient: HttpClient;
   endpoint = "https://api.dify.ai/v1/workflows/run";
 
-  constructor(httpClient: HttpClient, token: string) {
-    this.token = token;
-    this.httpClient = httpClient;
-  }
+  constructor(private httpClient: HttpClient, private token: string) {}
 
   async generateResponse(prompt: string): Promise<Result<string, string>> {
     const data = {
@@ -19,6 +14,7 @@ export class DifyService implements IllmService {
       conversation_id: "",
       user: "abc-123",
     };
+    console.log(this.token);
 
     const headers = {
       Authorization: `Bearer ${this.token}`,

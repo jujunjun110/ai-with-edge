@@ -1,8 +1,10 @@
 import { DifyService } from "../../services/difyService";
-import { container } from "../../utils/container";
+import { HttpClient } from "../../utils/httpClient";
 
 test("DifyService", async () => {
-  const difyService = container.get<DifyService>(DifyService);
+  const httpClient = new HttpClient();
+  const token = process.env.DIFY_TOKEN || "";
+  const difyService = new DifyService(httpClient, token);
   const prompt = "日本の首都は？絶対に2文字で答えて";
   const res = await difyService.generateResponse(prompt);
 

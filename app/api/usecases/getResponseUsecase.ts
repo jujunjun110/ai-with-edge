@@ -1,13 +1,10 @@
 import { Result } from "neverthrow";
-import { DifyService } from "../services/difyService";
-import { HttpClient } from "../utils/httpClient";
+import { IllmService } from "../services/illmService";
 
 export class GetResponseUsecase {
-  async execute(prompt: string): Promise<Result<string, string>> {
-    const httpClient = new HttpClient();
-    const token = process.env.DIFY_TOKEN || "";
-    const difyService = new DifyService(httpClient, token);
+  constructor(private llmService: IllmService) {}
 
-    return difyService.generateResponse(prompt);
+  async execute(prompt: string): Promise<Result<string, string>> {
+    return this.llmService.generateResponse(prompt);
   }
 }

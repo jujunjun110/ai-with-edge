@@ -9,8 +9,9 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("/api/hello");
+        const res = await fetch("/api/ai");
         const data = await res.json();
+        console.log("data: ", data);
         setData(data.message);
       } catch (error) {
         console.error("Error fetching data:", error);
