@@ -2,20 +2,17 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { AIResponse } from "./api/ai/route";
 
 export default function Home() {
   const [data, setData] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const res = await fetch("/api/ai");
-        const data = await res.json();
-        console.log("data: ", data);
-        setData(data.message);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+      const res = await fetch("/api/ai");
+      const data: AIResponse = await res.json();
+      console.log("data: ", data.message);
+      setData(data.message);
     };
     fetchData();
   }, []);
