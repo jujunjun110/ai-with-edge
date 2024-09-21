@@ -2,17 +2,40 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { AIResponse } from "./api/ai/route";
+// import { AIResponse } from "./api/ai/route";
 
 export default function Home() {
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [prompt, setPrompt] = useState<string>("");
 
-  const fetchData = async (prompt: string) => {
-    const res = await fetch(`/api/ai?prompt=${encodeURIComponent(prompt)}`);
-    const data: AIResponse = await res.json();
-    setAiResponse(data.message);
+  const fetchData2 = async (prompt: string) => {
+    const res = await fetch(`/api/ai`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ prompt }),
+    });
+    let done = false;
+    let aiResponseText = "";
+    const reader = res!.body!.getReader();
+    const decoder = new TextDecoder("utf-8");
+    while (!done) {
+      const { value, done: readerDone } = await reader.read();
+      done = readerDone;
+      if (value) {
+        const chunkValue = decoder.decode(value);
+        aiResponseText += chunkValue;
+        setAiResponse(aiResponseText);
+      }
+    }
   };
+
+  // const fetchData = async (prompt: string) => {
+  //   const res = await fetch(`/api/ai?prompt=${encodeURIComponent(prompt)}`);
+  //   const data: AIResponse = await res.json();
+  //   setAiResponse(data.message);
+  // };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPrompt(event.target.value);
@@ -20,7 +43,7 @@ export default function Home() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // デフォルトのフォーム送信を防ぐ
-    fetchData(prompt);
+    fetchData2(prompt);
   };
 
   return (

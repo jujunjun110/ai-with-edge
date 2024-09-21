@@ -3,7 +3,6 @@ import axios, { AxiosRequestConfig } from "axios";
 import { IncomingMessage } from "http";
 import { Result, err, ok } from "neverthrow";
 
-// @injectable()
 export class HttpClient {
   async post(url: string, data: any, headers?: any): Promise<Result<any, string>> {
     const config = { headers: headers } as AxiosRequestConfig;
