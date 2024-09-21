@@ -1,4 +1,4 @@
-import { Result } from "postcss";
+import { Result } from "neverthrow";
 import { DifyService } from "../services/difyService";
 import { container } from "../utils/container";
 

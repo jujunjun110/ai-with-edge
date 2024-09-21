@@ -1,24 +1,11 @@
-// app/api/hello/route.ts
-
 import { NextResponse } from "next/server";
-import { Result, ok, err } from "neverthrow";
-
-type Data = { message: string };
-type Error = { message: string };
-
-async function getData(): Promise<Result<Data, Error>> {
-  const isSuccess = Math.random() > 0.5; // ランダムに成功/失敗を決定
-  if (isSuccess) {
-    return ok({ message: "Hello, World!" });
-  } else {
-    return err({ message: "Something went wrong" });
-  }
-}
+import { GetResponseUsecase } from "../usecases/getResponseUsecase";
 
 export async function GET(): Promise<NextResponse> {
-  const result = await getData();
+  const usecase = new GetResponseUsecase();
+  const res = await usecase.execute("日本の首都は？絶対に2文字で答えて");
 
-  return result.match(
+  return res.match(
     (data) => NextResponse.json(data), // 成功時のレスポンス
     (error) => NextResponse.json(error, { status: 500 }) // エラー時のレスポンス
   );
