@@ -6,7 +6,6 @@ import { Result, ok, err } from "neverthrow";
 type Data = { message: string };
 type Error = { message: string };
 
-// サンプルの関数: 成功とエラーをランダムで返す
 async function getData(): Promise<Result<Data, Error>> {
   const isSuccess = Math.random() > 0.5; // ランダムに成功/失敗を決定
   if (isSuccess) {

@@ -1,30 +1,26 @@
 import { Result, err, ok } from "neverthrow";
 import { HttpClient } from "../utils/httpClient";
-import { IllmService } from "./IllmService";
+import { IllmService } from "./illmService";
+import { inject } from "inversify";
 
 export class DifyService implements IllmService {
+  private token: string;
+  private httpClient: HttpClient;
   endpoint = "https://api.dify.ai/v1/workflows/run";
-  constructor(private httpClient: HttpClient, private token: string) {}
 
-  generateImage(prompt: string): Promise<Result<string, string>> {
-    console.log("prompt: ", prompt);
-    throw new Error("Method not implemented.");
+  constructor(@inject(HttpClient) httpClient: HttpClient, @inject("DIFY_TOKEN") token: string) {
+    this.token = token;
+    this.httpClient = httpClient;
   }
 
   async generateResponse(prompt: string): Promise<Result<string, string>> {
-    return this.generateResponseWithChatLog([new ChatLog("user", prompt)]);
-  }
-
-  async generateResponseWithChatLog(chatLog: ChatLog[]): Promise<Result<string, string>> {
-    const messages = chatLog.map((c) => c.toString());
-
-    const input = messages.join("\n");
     const data = {
-      inputs: { prompt: input },
+      inputs: { prompt: prompt },
       response_mode: "blocking",
       conversation_id: "",
       user: "abc-123",
     };
+
     const headers = {
       Authorization: `Bearer ${this.token}`,
       "Content-Type": "application/json",
@@ -42,48 +38,48 @@ export class DifyService implements IllmService {
     return ok(res.value.data.outputs.output);
   }
 
-  async *generateResponseStream(prompt: string): AsyncIterableIterator<string> {
-    yield* this.generateResponseStreamWithChatLog([new ChatLog("user", prompt)]);
-  }
+  // async *generateResponseStream(prompt: string): AsyncIterableIterator<string> {
+  //   yield* this.generateResponseStreamWithChatLog([new ChatLog("user", prompt)]);
+  // }
 
-  async *generateResponseStreamWithChatLog(chatLog: ChatLog[]): AsyncIterableIterator<string> {
-    const messages = chatLog.map((c) => c.toString());
+  // async *generateResponseStreamWithChatLog(chatLog: ChatLog[]): AsyncIterableIterator<string> {
+  //   const messages = chatLog.map((c) => c.toString());
 
-    const query = messages.join("\n");
-    const data = {
-      inputs: { prompt: query },
-      response_mode: "streaming",
-      conversation_id: "",
-      user: "abc-123",
-    };
+  //   const query = messages.join("\n");
+  //   const data = {
+  //     inputs: { prompt: query },
+  //     response_mode: "streaming",
+  //     conversation_id: "",
+  //     user: "abc-123",
+  //   };
 
-    const headers = {
-      Authorization: `Bearer ${this.token}`,
-      "Content-Type": "application/json",
-    };
+  //   const headers = {
+  //     Authorization: `Bearer ${this.token}`,
+  //     "Content-Type": "application/json",
+  //   };
 
-    console.log("query: ", query);
-    console.log("headers: ", headers);
+  //   console.log("query: ", query);
+  //   console.log("headers: ", headers);
 
-    const stream = await this.httpClient.postStream(this.endpoint, data, headers);
+  //   const stream = await this.httpClient.postStream(this.endpoint, data, headers);
 
-    for await (const chunk of stream) {
-      const chunkHeader = "data:";
-      const chunkStr = chunk.toString();
-      const lines = chunkStr.split("\n").filter((l: string) => l.trim() !== "");
+  //   for await (const chunk of stream) {
+  //     const chunkHeader = "data:";
+  //     const chunkStr = chunk.toString();
+  //     const lines = chunkStr.split("\n").filter((l: string) => l.trim() !== "");
 
-      for (const line of lines) {
-        if (!line.startsWith(chunkHeader)) {
-          continue;
-        }
+  //     for (const line of lines) {
+  //       if (!line.startsWith(chunkHeader)) {
+  //         continue;
+  //       }
 
-        try {
-          const data = JSON.parse(line.replace(chunkHeader, ""));
-          yield data?.data.text ?? "";
-        } catch {
-          yield "";
-        }
-      }
-    }
-  }
+  //       try {
+  //         const data = JSON.parse(line.replace(chunkHeader, ""));
+  //         yield data?.data.text ?? "";
+  //       } catch {
+  //         yield "";
+  //       }
+  //     }
+  //   }
+  // }
 }
