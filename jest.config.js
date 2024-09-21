@@ -6,6 +6,7 @@ module.exports = {
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
     },
-    setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'], // ここで jest.setup.ts を指定
+    setupFiles: ["dotenv/config"],
+    setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 };
 
