@@ -47,7 +47,7 @@ export default function Home() {
   };
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="grid grid-rows-[20px_1fr_20px] min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <div className="top-0" dangerouslySetInnerHTML={{ __html: marked(aiResponse || "") }}></div>
       <form className="fixed w-4/5 bottom-0 flex h-12 bg-red-400  justify-between space-x-5" onSubmit={handleSubmit}>
         <textarea className="w-4/5 h-full p-4 resize-y border rounded-md text-black" value={prompt} onChange={handleChange} />
