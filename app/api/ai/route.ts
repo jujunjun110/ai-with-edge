@@ -7,17 +7,20 @@ export interface AIResponse {
   message: string;
 }
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: Request): Promise<NextResponse> {
+  const { searchParams } = new URL(request.url);
+  const prompt = searchParams.get("prompt") || "";
+
   const httpClient = new HttpClient();
   const token = process.env.DIFY_TOKEN || "";
   const difyService = new DifyService(httpClient, token);
   const usecase = new GetResponseUsecase(difyService);
-  const res = await usecase.execute("日本の首都は？絶対に2文字で答えて");
+  const res = await usecase.execute(prompt);
 
   if (res.isErr()) {
     return NextResponse.json(res.error, { status: 500 });
   }
 
-  const suc: AIResponse = { message: res.value };
-  return NextResponse.json(suc);
+  const successResult: AIResponse = { message: res.value };
+  return NextResponse.json(successResult);
 }
