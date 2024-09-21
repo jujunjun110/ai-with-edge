@@ -13,13 +13,6 @@ export class DifyService implements IllmService {
     this.token = token;
     this.httpClient = httpClient;
   }
-  getClient(): HttpClient {
-    return this.httpClient;
-  }
-
-  getToken(): string {
-    return this.token;
-  }
 
   async generateResponse(prompt: string): Promise<Result<string, string>> {
     const data = {
