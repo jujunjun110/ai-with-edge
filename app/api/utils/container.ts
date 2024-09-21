@@ -4,7 +4,7 @@ import { HttpClient } from "./httpClient";
 
 const container = new Container();
 
-container.bind<string>("DIFY_TOKEN").toConstantValue(process.env.Dify_TOKEN || "");
+container.bind<string>("DIFY_TOKEN").toConstantValue(process.env.Dify_TOKEN || "abc");
 
 container.bind<DifyService>(DifyService).toSelf();
 container.bind<HttpClient>(HttpClient).toSelf();

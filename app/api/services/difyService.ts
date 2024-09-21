@@ -1,8 +1,9 @@
 import { Result, err, ok } from "neverthrow";
 import { HttpClient } from "../utils/httpClient";
 import { IllmService } from "./illmService";
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class DifyService implements IllmService {
   private token: string;
   private httpClient: HttpClient;
@@ -11,6 +12,13 @@ export class DifyService implements IllmService {
   constructor(@inject(HttpClient) httpClient: HttpClient, @inject("DIFY_TOKEN") token: string) {
     this.token = token;
     this.httpClient = httpClient;
+  }
+  getClient(): HttpClient {
+    return this.httpClient;
+  }
+
+  getToken(): string {
+    return this.token;
   }
 
   async generateResponse(prompt: string): Promise<Result<string, string>> {
