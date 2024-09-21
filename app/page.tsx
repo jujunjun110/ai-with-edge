@@ -1,11 +1,18 @@
 "use client";
 import { useState } from "react";
+import { marked } from "marked";
 
 export default function Home() {
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [prompt, setPrompt] = useState<string>("");
+  const [isRunning, setIsRunning] = useState<boolean>(false);
 
   const fetchData = async (prompt: string) => {
+    if (isRunning) {
+      return;
+    }
+
+    setIsRunning(true);
     const res = await fetch(`/api/ai`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -27,9 +34,10 @@ export default function Home() {
         setAiResponse(aiResponseText);
       }
     }
+    setIsRunning(false);
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPrompt(event.target.value);
   };
 
@@ -40,9 +48,9 @@ export default function Home() {
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <p>{aiResponse ? <code className="">{aiResponse}</code> : <code className="text-[#0070f3]">Loading...</code>}</p>
-      <form className="fixed bottom-0 flex w-full h-12 bg-red-400  justify-between space-x-5" onSubmit={handleSubmit}>
-        <textarea className="w-4/5 h-full p-4 resize-y border rounded-md text-black" type="text" value={prompt} onChange={handleChange} />
+      <div className="top-0" dangerouslySetInnerHTML={{ __html: marked(aiResponse || "") }}></div>
+      <form className="fixed w-4/5 bottom-0 flex h-12 bg-red-400  justify-between space-x-5" onSubmit={handleSubmit}>
+        <textarea className="w-4/5 h-full p-4 resize-y border rounded-md text-black" value={prompt} onChange={handleChange} />
         <button className="w-1/5 h-full bg-slate-800 p-4" type="submit">
           Submit
         </button>
