@@ -1,15 +1,13 @@
 import { Result, err, ok } from "neverthrow";
 import { HttpClient } from "../utils/httpClient";
 import { IllmService } from "./illmService";
-import { inject, injectable } from "inversify";
 
-@injectable()
 export class DifyService implements IllmService {
   private token: string;
   private httpClient: HttpClient;
   endpoint = "https://api.dify.ai/v1/workflows/run";
 
-  constructor(@inject(HttpClient) httpClient: HttpClient, @inject("DIFY_TOKEN") token: string) {
+  constructor(httpClient: HttpClient, token: string) {
     this.token = token;
     this.httpClient = httpClient;
   }

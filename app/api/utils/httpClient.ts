@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosRequestConfig } from "axios";
 import { IncomingMessage } from "http";
-import { injectable } from "inversify";
 import { Result, err, ok } from "neverthrow";
 
-@injectable()
+// @injectable()
 export class HttpClient {
   async post(url: string, data: any, headers?: any): Promise<Result<any, string>> {
     const config = { headers: headers } as AxiosRequestConfig;
