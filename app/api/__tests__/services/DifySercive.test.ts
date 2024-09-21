@@ -1,7 +1,7 @@
 import { DifyService } from "../../services/difyService";
 import { HttpClient } from "../../utils/httpClient";
 
-test("DifyService", async () => {
+test("generateResponse", async () => {
   const httpClient = new HttpClient();
   const token = process.env.DIFY_TOKEN || "";
   const difyService = new DifyService(httpClient, token);
@@ -17,4 +17,23 @@ test("DifyService", async () => {
       throw new Error(`Test failed with error: ${error}`);
     }
   );
+});
+
+test("generateResponseStream", async () => {
+  const httpClient = new HttpClient();
+  const token = process.env.DIFY_TOKEN || "";
+  const difyService = new DifyService(httpClient, token);
+  const prompt = "日本の首都について30文字程度で教えて下さい";
+  const stream = difyService.generateResponseStream(prompt);
+
+  let count = 0;
+  let messaage = "";
+  for await (const chunk of stream) {
+    count++;
+    messaage += chunk;
+    if (count % 10 === 0) {
+      console.log(messaage);
+    }
+  }
+  expect(count).toBeGreaterThan(0);
 });
