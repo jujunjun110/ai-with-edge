@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosRequestConfig } from "axios";
 import { IncomingMessage } from "http";
 import { Result, err, ok } from "neverthrow";

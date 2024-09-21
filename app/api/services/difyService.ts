@@ -33,48 +33,41 @@ export class DifyService implements IllmService {
     return ok(res.value.data.outputs.output);
   }
 
-  // async *generateResponseStream(prompt: string): AsyncIterableIterator<string> {
-  //   yield* this.generateResponseStreamWithChatLog([new ChatLog("user", prompt)]);
-  // }
+  async *generateResponseStream(prompt: string): AsyncIterableIterator<string> {
+    const data = {
+      inputs: { prompt: prompt },
+      response_mode: "streaming",
+      conversation_id: "",
+      user: "abc-123",
+    };
 
-  // async *generateResponseStreamWithChatLog(chatLog: ChatLog[]): AsyncIterableIterator<string> {
-  //   const messages = chatLog.map((c) => c.toString());
+    const headers = {
+      Authorization: `Bearer ${this.token}`,
+      "Content-Type": "application/json",
+    };
 
-  //   const query = messages.join("\n");
-  //   const data = {
-  //     inputs: { prompt: query },
-  //     response_mode: "streaming",
-  //     conversation_id: "",
-  //     user: "abc-123",
-  //   };
+    console.log("query: ", prompt);
+    console.log("headers: ", headers);
 
-  //   const headers = {
-  //     Authorization: `Bearer ${this.token}`,
-  //     "Content-Type": "application/json",
-  //   };
+    const stream = await this.httpClient.postStream(this.endpoint, data, headers);
 
-  //   console.log("query: ", query);
-  //   console.log("headers: ", headers);
+    for await (const chunk of stream) {
+      const chunkHeader = "data:";
+      const chunkStr = chunk.toString();
+      const lines = chunkStr.split("\n").filter((l: string) => l.trim() !== "");
 
-  //   const stream = await this.httpClient.postStream(this.endpoint, data, headers);
+      for (const line of lines) {
+        if (!line.startsWith(chunkHeader)) {
+          continue;
+        }
 
-  //   for await (const chunk of stream) {
-  //     const chunkHeader = "data:";
-  //     const chunkStr = chunk.toString();
-  //     const lines = chunkStr.split("\n").filter((l: string) => l.trim() !== "");
-
-  //     for (const line of lines) {
-  //       if (!line.startsWith(chunkHeader)) {
-  //         continue;
-  //       }
-
-  //       try {
-  //         const data = JSON.parse(line.replace(chunkHeader, ""));
-  //         yield data?.data.text ?? "";
-  //       } catch {
-  //         yield "";
-  //       }
-  //     }
-  //   }
-  // }
+        try {
+          const data = JSON.parse(line.replace(chunkHeader, ""));
+          yield data?.data.text ?? "";
+        } catch {
+          yield "";
+        }
+      }
+    }
+  }
 }
